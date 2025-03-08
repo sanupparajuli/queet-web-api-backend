@@ -88,3 +88,22 @@ exports.updateTweet = async (req, res) => {
  * @route DELETE /api/tweets/:id
  * @access Private
  */
+exports.deleteTweet = async (req, res) => {
+    try {
+        let tweet = await Tweet.findById(req.params.id);
+
+        if (!tweet) {
+            return res.status(404).json({ message: 'Tweet not found' });
+        }
+
+        // Ensure only the owner can delete the tweet
+        if (tweet.user.toString() !== req.user.userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        await tweet.deleteOne();
+        res.status(200).json({ message: 'Tweet deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
