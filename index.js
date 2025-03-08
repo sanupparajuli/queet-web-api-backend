@@ -28,6 +28,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tweets', require('./routes/tweetRoutes')); // Include tweet routes
+app.use('/api/retweets', require('./routes/retweetRoutes'));
+
 // Server Start
 const PORT = 8080;
 
