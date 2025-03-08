@@ -45,6 +45,7 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+
 /**
  * @desc Login user
  * @route POST /api/users/login
@@ -89,74 +90,6 @@ exports.getUserProfile = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error', error: error.message });
-    }
-};
-
-/**
- * @desc Update profile picture
- * @route PUT /api/users/profile-picture
- * @access Private
- */
-exports.updateProfilePicture = async (req, res) => {
-    try {
-        const userId = req.user.userId; // Authenticated user ID from JWT middleware
-        if (!req.file) {
-            return res.status(400).json({ message: 'Please upload a valid image' });
-        }
-
-        // Find user by ID
-        let user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Optional: Delete previous profile picture (if needed)
-        if (user.profile_picture) {
-            const oldImagePath = `uploads/${user.profile_picture}`;
-            fs.unlink(oldImagePath, (err) => {
-                if (err) console.log('Old profile picture not deleted:', err);
-            });
-        }
-
-        // Update profile picture in database
-        user.profile_picture = req.file.filename;
-        await user.save();
-
-        res.status(200).json({
-            message: 'Profile picture updated successfully',
-            profile_picture: req.file.filename
-        });
-
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error', error: error.message });
-    }
-};
-
-exports.updateUserProfile = async (req, res) => {
-    try {
-        const userId = req.user.userId;
-        const { name, username, email, bio } = req.body;
-
-        let user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Update only the fields provided
-        if (name) user.name = name;
-        if (username) user.username = username;
-        if (email) user.email = email;
-        if (bio) user.bio = bio;
-
-        await user.save();
-
-        res.status(200).json({
-            message: 'Profile updated successfully',
-            user
-        });
-
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
