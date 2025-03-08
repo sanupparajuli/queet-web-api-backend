@@ -49,3 +49,32 @@ exports.likeTweet = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
+
+
+/**
+ * @desc Unlike a tweet
+ * @route DELETE /api/likes/:tweetId
+ * @access Private
+ */
+exports.unlikeTweet = async (req, res) => {
+    try {
+        const tweetId = req.params.tweetId;
+        const userId = req.user.userId;
+
+        // Check if the like exists
+        const like = await Like.findOne({ user: userId, tweet: tweetId });
+        if (!like) {
+            return res.status(400).json({ message: 'Tweet not liked' });
+        }
+
+        // Remove like from database
+        await like.deleteOne();
+
+        // Remove user from tweet's like array
+        await Tweet.findByIdAndUpdate(tweetId, { $pull: { likes: userId } });
+
+        res.status(200).json({ message: 'Tweet unliked' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
