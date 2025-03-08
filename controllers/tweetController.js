@@ -21,3 +21,17 @@ exports.createTweet = async (req, res) => {
     }
 };
 
+
+/**
+ * @desc Get all tweets
+ * @route GET /api/tweets
+ * @access Public
+ */
+exports.getAllTweets = async (req, res) => {
+    try {
+        const tweets = await Tweet.find().populate('user', 'name username profile_picture').sort({ created_at: -1 });
+        res.status(200).json(tweets);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
