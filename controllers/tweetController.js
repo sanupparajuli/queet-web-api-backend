@@ -35,3 +35,20 @@ exports.getAllTweets = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
+
+/**
+ * @desc Get a single tweet by ID
+ * @route GET /api/tweets/:id
+ * @access Public
+ */
+exports.getTweetById = async (req, res) => {
+    try {
+        const tweet = await Tweet.findById(req.params.id).populate('user', 'name username profile_picture');
+        if (!tweet) {
+            return res.status(404).json({ message: 'Tweet not found' });
+        }
+        res.status(200).json(tweet);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
