@@ -31,3 +31,16 @@ exports.retweet = async (req, res) => {
  * @route DELETE /api/retweets/:tweetId
  * @access Private
  */
+exports.unretweet = async (req, res) => {
+    try {
+        const tweetId = req.params.tweetId;
+        const userId = req.user.userId;
+
+        const retweet = await Retweet.findOneAndDelete({ user: userId, tweet: tweetId });
+        if (!retweet) return res.status(400).json({ message: 'Retweet not found' });
+
+        res.status(200).json({ message: 'Retweet removed' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
