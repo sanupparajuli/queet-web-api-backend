@@ -78,3 +78,21 @@ exports.unlikeTweet = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
+
+
+/**
+ * @desc Get all likes for a tweet
+ * @route GET /api/likes/:tweetId
+ * @access Public
+ */
+exports.getLikesForTweet = async (req, res) => {
+    try {
+        const tweetId = req.params.tweetId;
+
+        const likes = await Like.find({ tweet: tweetId }).populate('user', 'name username profile_picture');
+
+        res.status(200).json({ totalLikes: likes.length, likes });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
