@@ -23,3 +23,22 @@ exports.followUser = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
+
+/**
+ * @desc Unfollow a user
+ * @route DELETE /api/followers/:userId
+ * @access Private
+ */
+exports.unfollowUser = async (req, res) => {
+    try {
+        const followerId = req.user.userId;
+        const followingId = req.params.userId;
+
+        const follow = await Follower.findOneAndDelete({ follower: followerId, following: followingId });
+        if (!follow) return res.status(400).json({ message: 'Not following this user' });
+
+        res.status(200).json({ message: 'User unfollowed' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
